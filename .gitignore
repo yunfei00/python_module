@@ -122,3 +122,4 @@ COMMIT_SUMMARY.md
 *.yaml
 /test_data
 */output
+export_file/output_full.pdf
