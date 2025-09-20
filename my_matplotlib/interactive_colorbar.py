@@ -2,6 +2,7 @@
 交互式 colorbar 调用
 一次只显示一个图
 可以滚动 也可以点击调节最大值和最小值 支持手动输入最大值与最小值
+左键修改最小值 右键修改最大值
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -51,6 +52,40 @@ class InteractiveColorbar:
 
         self.fig.canvas.mpl_connect('button_press_event', self.onclick)
         self.fig.canvas.mpl_connect('scroll_event', self.onscroll)
+        self.fig.canvas.mpl_connect('button_press_event', self.on_dblclick)
+
+        # self.cid_press = self.fig.canvas.mpl_connect('button_press_event', self.on_press)
+        # self.cid_release = self.fig.canvas.mpl_connect('button_release_event', self.on_release)
+        # self.cid_motion = self.fig.canvas.mpl_connect('motion_notify_event', self.on_motion)
+    # def on_press(self, event):
+    #     if event.inaxes == self.cbar.ax:
+    #         self.dragging['active'] = True
+    #         self.dragging['start_y'] = event.ydata
+    #         self.dragging['vmin'], self.dragging['vmax'] = self.im.get_clim()
+    #         if event.key == 'shift':
+    #             self.dragging['modifier'] = 'shift'
+    #         elif event.key == 'control':
+    #             self.dragging['modifier'] = 'ctrl'
+    #         else:
+    #             self.dragging['modifier'] = None
+    #
+    # def on_release(self, event):
+    #     self.dragging['active'] = False
+    #     self.dragging['modifier'] = None
+    # def on_motion(self, event):
+    #     if self.dragging['active'] and event.inaxes == self.cbar.ax and event.ydata is not None:
+    #         dy = event.ydata - self.dragging['start_y']
+    #         scale = (self.dragging['vmax'] - self.dragging['vmin']) / 50.0
+    #         vmin0, vmax0 = self.dragging['vmin'], self.dragging['vmax']
+    #         mod = self.dragging['modifier']
+    #         if mod == 'shift':
+    #             new_vmin, new_vmax = vmin0 + dy * scale, vmax0
+    #         elif mod == 'ctrl':
+    #             new_vmin, new_vmax = vmin0, vmax0 + dy * scale
+    #         else:
+    #             new_vmin, new_vmax = vmin0 + dy * scale, vmax0 + dy * scale
+    #         if new_vmax > new_vmin:
+    #             self.apply_clim(new_vmin, new_vmax)
 
     def update_vmin(self, text):
         try:
@@ -89,7 +124,10 @@ class InteractiveColorbar:
                 self.vmax = data_val
                 self.textbox_vmax.set_val(f"{self.vmax:.2f}")
             self.im.set_clim(self.vmin, self.vmax)
-        return
+
+    def on_dblclick(self, event):
+        if event.inaxes == self.cbar.ax and event.button == 3 and event.dblclick:
+            self.reset_range()  # 恢复原始范围
 
     def onscroll(self, event: MouseEvent):
         if event.inaxes == self.cbar.ax:
