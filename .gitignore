@@ -119,6 +119,6 @@ COMMIT_SUMMARY.md
 *.temp
 *.pyc.*
 *.pyo.*
-
+*.yaml
 /test_data
 */output
